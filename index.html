@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Read Product from API</title>
+    <!-- Bootstrap CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="row">
+            <div class="col-6">
+                <h2 class="my-4">Product List</h2>
+            </div>
+            <div class="col-6">
+                <a href="#" class="btn btn-success float-right my-4" data-toggle="modal"
+                    data-target="#exampleModal">+Add Product</a>
+            </div>
+        </div>
+
+        <!-- Bootstrap Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add Product</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formAddProduct">
+                            <div class="form-group row">
+                                <label for="product_name" class="col-sm-3 col-form-label">Name</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="product_name" class="form-control" autofocus>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="product_barcode" class="col-sm-3 col-form-label">Barcode</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="product_barcode" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="product_qty" class="col-sm-3 col-form-label">Qty</label>
+                                <div class="col-sm-9">
+                                    <input type="number" name="product_qty" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="product_price" class="col-sm-3 col-form-label">Price</label>
+                                <div class="col-sm-9">
+                                    <input type="number" name="product_price" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="product_image" class="col-sm-3 col-form-label">Image</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="product_image" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="product_category" class="col-sm-3 col-form-label">Category</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="product_category" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="product_detail" class="col-sm-3 col-form-label">Detail</label>
+                                <div class="col-sm-9">
+                                    <textarea name="product_detail" rows="5" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="product_status" class="col-sm-3 col-form-label">Status</label>
+                                <div class="col-sm-9">
+                                    <select name="product_status" class="form-control">
+                                        <option value="1">Active</option>
+                                        <option value="0">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btnSave">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table id="myproduct" class="display">
+            <thead>
+                <tr class="bg-primary text-white">
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Barcode</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+
+    <!-- jQuery CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(function () {
+
+            // read product function
+            readProduct()
+
+            // submit form แบบไม่ reload page
+            $("button#btnSave").click(function () {
+
+                // รับค่าจาก form ด้วย serialize
+                let data = $("form#formAddProduct").serialize()
+
+                // ส่งข้อมูลไปบันทึก
+                $.ajax({
+                    headers: {
+                        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6InNhbWl0QGVtYWlsLmNvbSIsImlhdCI6MTY3ODg2MzYxOCwiZXhwIjoxNjc4ODY3MjE4fQ.nQELeFKu2EZxDI4_Ld2OSeMRFQKJ8uDI3zr516mrI1o'
+                    },
+                    url: 'http://localhost:81/stockrestapi/public/api/v1/products',
+                    method: 'POST',
+                    data: data,
+                    dataType: 'json',
+                    success: function (result) {
+                        // load ข้อมูลใหม่
+                        // readProduct()
+                        $('#myproduct').DataTable().ajax.reload()
+                        console.log(result)
+                        // reset form
+                        $("form#formAddProduct")[0].reset()
+                        // focus ไปที่ช่อง product_name
+                        $("form#formAddProduct input[name='product_name']").focus()
+
+                    },
+                })
+
+            })
+
+            function readProduct() {
+
+                // ดึงข้อมูลมาแสดงทั้งหมด
+                // $.ajax({
+                //     headers: {
+                //         'Authorization': 'Basic ' + btoa('admin:1234')
+                //     },
+                //     url: 'http://localhost:81/stockrestapi/public/api/v1/products',
+                //     method: 'GET',
+                //     dataType: 'json',
+                //     success: function (result) {
+                //         // alert(JSON.stringify(result))
+                //         let data = JSON.parse(JSON.stringify(result))
+
+                //         // loop ทั้งหมดออกมาแสดง
+                //         let trstring = ""
+                //         $.each(data, function (key, val) {
+                //             trstring += `<tr>
+                //                 <td>${val.id}</td>
+                //                 <td>${val.product_name}</td>
+                //                 <td>${val.product_barcode}</td>
+                //                 <td>${val.product_price}</td>
+                //                 <td>${val.product_qty}</td>
+                //             </tr>`
+                //         })
+
+                //         $('tbody').html(trstring)
+                //     }
+                // })
+
+
+                // ดึงข้อมูลมาแสดงด้วย datatable
+                $("#myproduct").DataTable({
+                    "ajax": {
+                        "url": "http://localhost:81/stockrestapi/public/api/v1/products",
+                        "type": "GET",
+                        "headers": {
+                            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6InNhbWl0QGVtYWlsLmNvbSIsImlhdCI6MTY3ODg2MzYxOCwiZXhwIjoxNjc4ODY3MjE4fQ.nQELeFKu2EZxDI4_Ld2OSeMRFQKJ8uDI3zr516mrI1o"
+                        },
+                        "dataSrc": ""
+                    },
+                    "columns": [
+                        { "data": "id" },
+                        { "data": "product_name" },
+                        { "data": "product_barcode" },
+                        { "data": "product_price" },
+                        { "data": "product_qty" }
+                    ],
+                    order: [[0, 'desc']]
+                })
+
+            }
+        })
+
+    </script>
+</body>
+
+</html>
